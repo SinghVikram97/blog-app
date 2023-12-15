@@ -19,8 +19,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         User userDAO = modelMapper.dtoToUserDAO(userDTO);
-        userRepository.save(userDAO);
-        return null;
+        User savedUserDAO = userRepository.save(userDAO);
+        return modelMapper.daoToUserDTO(savedUserDAO);
     }
 
     @Override
