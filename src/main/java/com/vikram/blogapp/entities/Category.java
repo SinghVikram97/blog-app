@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "categories")
 @NoArgsConstructor
@@ -24,4 +27,19 @@ public class Category {
 
     @Column(name="description")
     private String categoryDescription;
+
+    @OneToMany(
+            mappedBy = "category"
+    )
+    private List<Post> posts = new ArrayList<>();
+
+    public void addPost(Post newPost) {
+        posts.add(newPost);
+        newPost.setCategory(this);
+    }
+
+    public void removePost(Post post){
+        posts.remove(post);
+        post.setCategory(null);
+    }
 }
