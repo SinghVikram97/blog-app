@@ -1,6 +1,7 @@
 package com.vikram.blogapp.controller;
 
 import com.vikram.blogapp.dto.CategoryDTO;
+import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +50,12 @@ public class CategoryController {
     public ResponseEntity<List<CategoryDTO>> getAllCategories(){
         List<CategoryDTO> allCategories = categoryService.getAllCategories();
         return new ResponseEntity<>(allCategories, HttpStatus.OK);
+    }
+
+    // GET - Get all posts in a category
+    @GetMapping("/{categoryId}/posts")
+    public ResponseEntity<List<PostDTO>> getAllPostsByCategory(@PathVariable long categoryId){
+        List<PostDTO> allPosts = categoryService.getAllPostsByCategory(categoryId);
+        return new ResponseEntity<>(allPosts, HttpStatus.OK);
     }
 }

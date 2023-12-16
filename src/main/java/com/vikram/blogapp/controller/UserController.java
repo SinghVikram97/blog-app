@@ -1,5 +1,6 @@
 package com.vikram.blogapp.controller;
 
+import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.dto.UserDTO;
 import com.vikram.blogapp.service.UserService;
 import jakarta.validation.Valid;
@@ -56,5 +57,12 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getAllUsers(){
         List<UserDTO> allUsers = userService.getAllUsers();
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
+    }
+
+    // GET - Get all posts by user
+    @GetMapping("/{userId}/posts")
+    public ResponseEntity<List<PostDTO>> getAllPostsByUser(@PathVariable long userId){
+        List<PostDTO> allPosts = userService.getAllPostsByUser(userId);
+        return new ResponseEntity<>(allPosts, HttpStatus.OK);
     }
 }

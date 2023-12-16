@@ -1,7 +1,7 @@
 package com.vikram.blogapp.service;
 
+import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.dto.UserDTO;
-import com.vikram.blogapp.entities.User;
 
 import java.util.List;
 
@@ -11,4 +11,7 @@ public interface UserService {
     UserDTO getUserById(long userId);
     List<UserDTO> getAllUsers();
     UserDTO deleteUser(long userId);
+
+    // Get all posts by a user
+    List<PostDTO> getAllPostsByUser(long userId);
 }

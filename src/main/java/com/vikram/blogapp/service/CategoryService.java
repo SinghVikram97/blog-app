@@ -1,6 +1,7 @@
 package com.vikram.blogapp.service;
 
 import com.vikram.blogapp.dto.CategoryDTO;
+import com.vikram.blogapp.dto.PostDTO;
 
 import java.util.List;
 
@@ -19,4 +20,7 @@ public interface CategoryService {
 
     // Get all categories
     List<CategoryDTO> getAllCategories();
+
+    // Get all posts in a category
+    List<PostDTO> getAllPostsByCategory(long categoryId);
 }

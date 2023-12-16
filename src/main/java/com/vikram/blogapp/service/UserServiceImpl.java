@@ -1,9 +1,12 @@
 package com.vikram.blogapp.service;
 
+import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.dto.UserDTO;
+import com.vikram.blogapp.entities.Post;
 import com.vikram.blogapp.entities.User;
 import com.vikram.blogapp.exception.ResourceNotFoundException;
 import com.vikram.blogapp.mapper.ModelMapper;
+import com.vikram.blogapp.repository.PostRepository;
 import com.vikram.blogapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PostRepository postRepository;
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         User userDAO = modelMapper.dtoToUserDAO(userDTO);
@@ -53,5 +57,13 @@ public class UserServiceImpl implements UserService {
         User userDAO = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","id",userId));
         userRepository.deleteById(userDAO.getId());
         return modelMapper.daoToUserDTO(userDAO);
+    }
+
+    @Override
+    public List<PostDTO> getAllPostsByUser(long userId) {
+        User userDAO = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","id",userId));
+        List<Post> postsDAO = userDAO.getPosts();
+
+        return postsDAO.stream().map(modelMapper::daoTOPostDTO).collect(Collectors.toList());
     }
 }
