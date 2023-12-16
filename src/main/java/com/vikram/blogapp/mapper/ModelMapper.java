@@ -1,6 +1,8 @@
 package com.vikram.blogapp.mapper;
 
+import com.vikram.blogapp.dto.CategoryDTO;
 import com.vikram.blogapp.dto.UserDTO;
+import com.vikram.blogapp.entities.Category;
 import com.vikram.blogapp.entities.User;
 import org.springframework.stereotype.Service;
 
@@ -25,4 +27,22 @@ public class ModelMapper {
                 .about(user.getAbout())
                 .build();
     }
+
+    public Category dtoToCategoryDAO(CategoryDTO category) {
+        return Category.builder()
+                .id(category.getId())
+                .categoryTitle(category.getCategoryTitle())
+                .categoryDescription(category.getCategoryDescription())
+                .build();
+    }
+
+    public CategoryDTO daoToCategoryDTO(Category category) {
+        return CategoryDTO.builder()
+                .id(category.getId())
+                .categoryTitle(category.getCategoryTitle())
+                .categoryDescription(category.getCategoryDescription())
+                .build();
+    }
 }
+
+
