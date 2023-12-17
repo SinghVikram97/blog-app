@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.vikram.blogapp.constants.Constants.*;
+
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
@@ -48,10 +50,10 @@ public class PostController {
     // GET - Get all posts
     @GetMapping
     public ResponseEntity<PaginationResponseDTO> getAllPosts(
-            @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir
+            @RequestParam(value = "pageNumber", defaultValue = PAGINATION_DEFAULT_PAGE_NUMBER, required = false) int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = PAGINATION_DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = PAGINATION_DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = PAGINATION_DEFAULT_SORT_DIR, required = false) String sortDir
     ){
         PaginationResponseDTO paginationResponseDTO = postService.getAllPosts(pageNumber, pageSize, sortBy, sortDir);
         return new ResponseEntity<>(paginationResponseDTO, HttpStatus.OK);
