@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -115,8 +116,15 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PaginationResponseDTO getAllPosts(int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+    public PaginationResponseDTO getAllPosts(int pageNumber, int pageSize, String sortBy, String sortDir) {
+        Sort sort;
+        if(sortDir.equalsIgnoreCase("desc")) {
+            sort = Sort.by(sortBy).descending();
+        } else {
+            sort = Sort.by(sortBy);
+        }
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Post> page = postRepository.findAll(pageable);
         List<Post> postDaoList =page.getContent();
         List<PostDTO> content = postDaoList.stream().map(modelMapper::daoTOPostDTO).toList();
@@ -140,6 +148,7 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public List<PostDTO> searchPosts(String keyword) {
-        return null;
+        List<Post> postDAOList = postRepository.findByTitleContaining(keyword);
+        return postDAOList.stream().map(modelMapper::daoTOPostDTO).collect(Collectors.toList());
     }
 }

@@ -17,7 +17,7 @@ public interface PostService {
     PostDTO deletePost(long postId);
 
     // Get all Posts
-    PaginationResponseDTO getAllPosts(int pageNumber, int pageSize);
+    PaginationResponseDTO getAllPosts(int pageNumber, int pageSize, String sortBy, String sortDir);
 
     // Get single post
     PostDTO getPostById(long postId);
