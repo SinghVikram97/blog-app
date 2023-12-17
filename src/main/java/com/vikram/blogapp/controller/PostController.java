@@ -1,5 +1,6 @@
 package com.vikram.blogapp.controller;
 
+import com.vikram.blogapp.dto.PaginationResponseDTO;
 import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.service.PostService;
 import jakarta.validation.Valid;
@@ -46,11 +47,11 @@ public class PostController {
 
     // GET - Get all posts
     @GetMapping
-    public ResponseEntity<List<PostDTO>> getAllPosts(
+    public ResponseEntity<PaginationResponseDTO> getAllPosts(
             @RequestParam(value = "pageNumber", defaultValue = "1", required = false) int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
     ){
-        List<PostDTO> allPosts = postService.getAllPosts(pageNumber, pageSize);
-        return new ResponseEntity<>(allPosts, HttpStatus.OK);
+        PaginationResponseDTO paginationResponseDTO = postService.getAllPosts(pageNumber, pageSize);
+        return new ResponseEntity<>(paginationResponseDTO, HttpStatus.OK);
     }
 }

@@ -1,5 +1,6 @@
 package com.vikram.blogapp.service;
 
+import com.vikram.blogapp.dto.PaginationResponseDTO;
 import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.entities.Post;
 
@@ -16,7 +17,7 @@ public interface PostService {
     PostDTO deletePost(long postId);
 
     // Get all Posts
-    List<PostDTO> getAllPosts(int pageNumber, int pageSize);
+    PaginationResponseDTO getAllPosts(int pageNumber, int pageSize);
 
     // Get single post
     PostDTO getPostById(long postId);

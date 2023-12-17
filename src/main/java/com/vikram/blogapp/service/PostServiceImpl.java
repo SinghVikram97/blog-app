@@ -1,5 +1,6 @@
 package com.vikram.blogapp.service;
 
+import com.vikram.blogapp.dto.PaginationResponseDTO;
 import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.entities.Category;
 import com.vikram.blogapp.entities.Post;
@@ -114,11 +115,21 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<PostDTO> getAllPosts(int pageNumber, int pageSize) {
+    public PaginationResponseDTO getAllPosts(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Post> page = postRepository.findAll(pageable);
         List<Post> postDaoList =page.getContent();
-        return postDaoList.stream().map(modelMapper::daoTOPostDTO).collect(Collectors.toList());
+        List<PostDTO> content = postDaoList.stream().map(modelMapper::daoTOPostDTO).toList();
+
+        return PaginationResponseDTO
+                .builder()
+                .content(content)
+                .pageNumber(page.getNumber())
+                .pageSize(page.getSize())
+                .totalPages(page.getTotalPages())
+                .totalElements(page.getNumberOfElements())
+                .isLastPage(page.isLast())
+                .build();
     }
 
     @Override
