@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
@@ -26,13 +29,19 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostDTO createPost(PostDTO postDTO) {
-       // Get userId and categoryId
-       long userId = postDTO.getUserId();
-       long categoryId = postDTO.getCategoryId();
+       // Get userId
+        long userId = postDTO.getUserId();
+        // Find user
+        User userDao = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","id",userId));
 
-       // Find user and category
-       User userDao = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","id",userId));
-       Category categoryDAO = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "Category ID", categoryId));
+        // Get categoryId - it can be null
+        Category categoryDAO = null;
+        if(nonNull(postDTO.getCategoryId())){
+            long categoryId = postDTO.getCategoryId();
+            // Find category
+            categoryDAO = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "Category ID", categoryId));
+        }
+
 
        // Convert post dto to post we expect only title and content in dto
         Post postDAO = modelMapper.dtoTOPostDAO(postDTO);
@@ -48,10 +57,13 @@ public class PostServiceImpl implements PostService{
         // Save post in db
         Post savedPostDAO = postRepository.save(postDAO);
 
-        // Add this to user and category
+        // Add this post to user and category
         userDao.addPost(savedPostDAO);
-        categoryDAO.addPost(savedPostDAO);
 
+        // check if category not null
+        if(nonNull(categoryDAO)) {
+            categoryDAO.addPost(savedPostDAO);
+        }
         return modelMapper.daoTOPostDTO(savedPostDAO);
     }
 
@@ -65,8 +77,10 @@ public class PostServiceImpl implements PostService{
         postDao.setImageName(postDTO.getImageName());
 
         // Update category
-        Category categoryDAO = categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category", "Category ID", postDTO.getCategoryId()));
-        postDao.setCategory(categoryDAO);
+        if(nonNull(postDTO.getCategoryId())){
+            Category categoryDAO = categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category", "Category ID", postDTO.getCategoryId()));
+            postDao.setCategory(categoryDAO);
+        }
 
         // Update user
         User userDao = userRepository.findById(postDTO.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User","id",postDTO.getUserId()));
@@ -88,8 +102,11 @@ public class PostServiceImpl implements PostService{
         Category category = postDao.getCategory();
 
         user.removePost(postDao);
-        category.removePost(postDao);
 
+        // category can be null
+        if(nonNull(category)) {
+            category.removePost(postDao);
+        }
         return modelMapper.daoTOPostDTO(postDao);
     }
 

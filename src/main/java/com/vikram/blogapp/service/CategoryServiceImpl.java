@@ -40,6 +40,12 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public CategoryDTO deleteCategory(long categoryId) {
         Category categoryDAO = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "Category ID", categoryId));
+
+        // Set category of all associated posts to null
+        List<Post> posts = categoryDAO.getPosts();
+        posts.forEach(post -> post.setCategory(null));
+
+        // Now remove the category
         categoryRepository.deleteById(categoryDAO.getId());
         return modelMapper.daoToCategoryDTO(categoryDAO);
     }

@@ -33,6 +33,5 @@ public class PostDTO {
     @NotNull
     private Long userId;
 
-    @NotNull
     private Long categoryId;
 }

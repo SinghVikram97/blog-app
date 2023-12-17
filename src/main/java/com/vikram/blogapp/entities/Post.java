@@ -33,7 +33,7 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
     @Override
