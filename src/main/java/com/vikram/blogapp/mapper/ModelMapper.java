@@ -8,6 +8,10 @@ import com.vikram.blogapp.entities.Post;
 import com.vikram.blogapp.entities.User;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
+import static java.util.Objects.nonNull;
+
 @Service
 public class ModelMapper {
     public User dtoToUserDAO(UserDTO user) {
@@ -58,8 +62,8 @@ public class ModelMapper {
                 .content(post.getContent())
                 .imageName(post.getImageName())
                 .addedDate(post.getAddedDate())
-                .userId(post.getUser().getId())
-                .categoryId(post.getCategory().getId())
+                .userId(nonNull(post.getUser()) ? post.getUser().getId() : null )
+                .categoryId(nonNull(post.getCategory()) ? post.getCategory().getId() : null)
                 .build();
     }
 }

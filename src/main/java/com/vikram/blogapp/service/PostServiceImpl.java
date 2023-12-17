@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,22 +57,52 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostDTO updatePost(PostDTO postDTO, long postId) {
-        return null;
+        // We can update title, content, user, category, image
+        Post postDao = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id",postId));
+
+        postDao.setTitle(postDTO.getTitle());
+        postDao.setContent(postDTO.getContent());
+        postDao.setImageName(postDTO.getImageName());
+
+        // Update category
+        Category categoryDAO = categoryRepository.findById(postDTO.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category", "Category ID", postDTO.getCategoryId()));
+        postDao.setCategory(categoryDAO);
+
+        // Update user
+        User userDao = userRepository.findById(postDTO.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User","id",postDTO.getUserId()));
+        postDao.setUser(userDao);
+
+        // Save in db
+        Post savedPost = postRepository.save(postDao);
+
+        return modelMapper.daoTOPostDTO(savedPost);
     }
 
     @Override
     public PostDTO deletePost(long postId) {
-        return null;
+        Post postDao = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id",postId));
+        postRepository.delete(postDao);
+
+        // Remove this post from user and category as well
+        User user = postDao.getUser();
+        Category category = postDao.getCategory();
+
+        user.removePost(postDao);
+        category.removePost(postDao);
+
+        return modelMapper.daoTOPostDTO(postDao);
     }
 
     @Override
     public List<PostDTO> getAllPosts() {
-        return null;
+        List<Post> postDaoList = postRepository.findAll();
+        return postDaoList.stream().map(modelMapper::daoTOPostDTO).collect(Collectors.toList());
     }
 
     @Override
     public PostDTO getPostById(long postId) {
-        return null;
+        Post postDao = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id",postId));
+        return modelMapper.daoTOPostDTO(postDao);
     }
 
     @Override
