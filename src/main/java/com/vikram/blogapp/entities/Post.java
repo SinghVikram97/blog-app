@@ -26,8 +26,6 @@ public class Post {
     @Column(columnDefinition = "LONGTEXT")
     private String content;
 
-    private String imageName;
-
     private Date addedDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

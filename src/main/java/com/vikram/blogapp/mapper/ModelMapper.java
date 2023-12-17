@@ -60,7 +60,6 @@ public class ModelMapper {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .imageName(post.getImageName())
                 .addedDate(post.getAddedDate())
                 .userId(nonNull(post.getUser()) ? post.getUser().getId() : null )
                 .categoryId(nonNull(post.getCategory()) ? post.getCategory().getId() : null)

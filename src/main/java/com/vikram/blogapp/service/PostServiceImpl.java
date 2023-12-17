@@ -55,9 +55,8 @@ public class PostServiceImpl implements PostService{
         postDAO.setUser(userDao);
         postDAO.setCategory(categoryDAO);
 
-        // Set date and image url
+        // Set date
         postDAO.setAddedDate(new Date());
-        postDAO.setImageName("default.png");
 
         // Save post in db
         Post savedPostDAO = postRepository.save(postDAO);
@@ -74,12 +73,11 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostDTO updatePost(PostDTO postDTO, long postId) {
-        // We can update title, content, user, category, image
+        // We can update title, content, user, category
         Post postDao = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id",postId));
 
         postDao.setTitle(postDTO.getTitle());
         postDao.setContent(postDTO.getContent());
-        postDao.setImageName(postDTO.getImageName());
 
         // Update category
         if(nonNull(postDTO.getCategoryId())){

@@ -26,8 +26,6 @@ public class PostDTO {
     @NotEmpty
     private String content;
 
-    private String imageName;
-
     private Date addedDate;
 
     @NotNull
