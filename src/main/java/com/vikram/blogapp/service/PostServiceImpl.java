@@ -10,6 +10,9 @@ import com.vikram.blogapp.repository.CategoryRepository;
 import com.vikram.blogapp.repository.PostRepository;
 import com.vikram.blogapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -111,8 +114,10 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<PostDTO> getAllPosts() {
-        List<Post> postDaoList = postRepository.findAll();
+    public List<PostDTO> getAllPosts(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Post> page = postRepository.findAll(pageable);
+        List<Post> postDaoList =page.getContent();
         return postDaoList.stream().map(modelMapper::daoTOPostDTO).collect(Collectors.toList());
     }
 
