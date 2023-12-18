@@ -1,5 +1,6 @@
 package com.vikram.blogapp.service;
 
+import com.vikram.blogapp.dto.CommentDTO;
 import com.vikram.blogapp.dto.PaginationResponseDTO;
 import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.entities.Post;
@@ -24,4 +25,7 @@ public interface PostService {
 
     // Search Posts
     List<PostDTO> searchPosts(String keyword);
+
+    // Get all comments for a post
+    List<CommentDTO> getAllComments(long postId);
 }

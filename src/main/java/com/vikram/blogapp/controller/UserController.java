@@ -1,5 +1,6 @@
 package com.vikram.blogapp.controller;
 
+import com.vikram.blogapp.dto.CommentDTO;
 import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.dto.UserDTO;
 import com.vikram.blogapp.service.UserService;
@@ -64,5 +65,12 @@ public class UserController {
     public ResponseEntity<List<PostDTO>> getAllPostsByUser(@PathVariable long userId){
         List<PostDTO> allPosts = userService.getAllPostsByUser(userId);
         return new ResponseEntity<>(allPosts, HttpStatus.OK);
+    }
+
+    // GET - Get all comments by user
+    @GetMapping("/{userId}/comments")
+    public ResponseEntity<List<CommentDTO>> getAllCommentsByUser(@PathVariable long userId) {
+        List<CommentDTO> allCommentsByUser = userService.getAllCommentsByUser(userId);
+        return new ResponseEntity<>(allCommentsByUser, HttpStatus.OK);
     }
 }

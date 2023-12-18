@@ -1,5 +1,6 @@
 package com.vikram.blogapp.service;
 
+import com.vikram.blogapp.dto.CommentDTO;
 import com.vikram.blogapp.dto.PaginationResponseDTO;
 import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.entities.Category;
@@ -48,7 +49,7 @@ public class PostServiceImpl implements PostService{
         }
 
 
-       // Convert post dto to post we expect only title and content in dto
+       // Convert post dto to post, take out only title and content from dto
         Post postDAO = modelMapper.dtoTOPostDAO(postDTO);
 
         // Add user and category to postDAO
@@ -148,5 +149,11 @@ public class PostServiceImpl implements PostService{
     public List<PostDTO> searchPosts(String keyword) {
         List<Post> postDAOList = postRepository.findByTitleContaining(keyword);
         return postDAOList.stream().map(modelMapper::daoTOPostDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CommentDTO> getAllComments(long postId) {
+        Post postDao = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id",postId));
+        return postDao.getComments().stream().map(modelMapper::daoToCommentDTO).collect(Collectors.toList());
     }
 }

@@ -1,5 +1,6 @@
 package com.vikram.blogapp.controller;
 
+import com.vikram.blogapp.dto.CommentDTO;
 import com.vikram.blogapp.dto.PaginationResponseDTO;
 import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.service.PostService;
@@ -11,7 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.vikram.blogapp.constants.Constants.*;
+import static com.vikram.blogapp.constants.Constants.PAGINATION_DEFAULT_PAGE_NUMBER;
+import static com.vikram.blogapp.constants.Constants.PAGINATION_DEFAULT_PAGE_SIZE;
+import static com.vikram.blogapp.constants.Constants.PAGINATION_DEFAULT_SORT_BY;
+import static com.vikram.blogapp.constants.Constants.PAGINATION_DEFAULT_SORT_DIR;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -66,5 +70,12 @@ public class PostController {
     ) {
         List<PostDTO> result = postService.searchPosts(keyword);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    // Get all comments for a post
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<List<CommentDTO> > getAllComments(@PathVariable long postId){
+        List<CommentDTO> allComments = postService.getAllComments(postId);
+        return new ResponseEntity<>(allComments, HttpStatus.OK);
     }
 }

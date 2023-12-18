@@ -29,7 +29,7 @@ public class Category {
     private String categoryDescription;
 
     @OneToMany(
-            mappedBy = "category"
+            mappedBy = "category" // Don't remove category if post deleted
     )
     private List<Post> posts = new ArrayList<>();
 

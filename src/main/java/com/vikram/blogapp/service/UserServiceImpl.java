@@ -1,7 +1,9 @@
 package com.vikram.blogapp.service;
 
+import com.vikram.blogapp.dto.CommentDTO;
 import com.vikram.blogapp.dto.PostDTO;
 import com.vikram.blogapp.dto.UserDTO;
+import com.vikram.blogapp.entities.Comment;
 import com.vikram.blogapp.entities.Post;
 import com.vikram.blogapp.entities.User;
 import com.vikram.blogapp.exception.ResourceNotFoundException;
@@ -19,7 +21,6 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    private final PostRepository postRepository;
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         User userDAO = modelMapper.dtoToUserDAO(userDTO);
@@ -65,5 +66,12 @@ public class UserServiceImpl implements UserService {
         List<Post> postsDAO = userDAO.getPosts();
 
         return postsDAO.stream().map(modelMapper::daoTOPostDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CommentDTO> getAllCommentsByUser(long userId) {
+        User userDAO = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","id",userId));
+        List<Comment> comments = userDAO.getComments();
+        return comments.stream().map(modelMapper::daoToCommentDTO).collect(Collectors.toList());
     }
 }
