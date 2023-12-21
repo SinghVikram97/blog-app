@@ -1,5 +1,6 @@
 package com.vikram.blogapp.dto;
 
+import com.vikram.blogapp.entities.Role;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,8 +17,12 @@ public class UserDTO {
     private long id;
 
     @NotEmpty
-    @Size(min = 4, message = "Username must be minimum of 4 characters")
-    private String name;
+    @Size(min = 4, message = "first name must be minimum of 4 characters")
+    private String firstName;
+
+    @NotEmpty
+    @Size(min = 4, message = "last name must be minimum of 4 characters")
+    private String lastName;
 
     @Email(message = "Email address is not valid")
     private String email;
@@ -28,4 +33,7 @@ public class UserDTO {
 
     @NotEmpty(message = "About should not be empty")
     private String about;
+
+    @NotNull
+    private Role role;
 }

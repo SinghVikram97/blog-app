@@ -10,28 +10,30 @@ import com.vikram.blogapp.entities.Post;
 import com.vikram.blogapp.entities.User;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
 import static java.util.Objects.nonNull;
 
 @Service
 public class ModelMapper {
     public User dtoToUserDAO(UserDTO user) {
         return User.builder()
-                .name(user.getName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .about(user.getAbout())
+                .role(user.getRole())
                 .build();
     }
 
     public UserDTO daoToUserDTO(User user) {
         return UserDTO.builder()
                 .id(user.getId())
-                .name(user.getName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .about(user.getAbout())
+                .role(user.getRole())
                 .build();
     }
 

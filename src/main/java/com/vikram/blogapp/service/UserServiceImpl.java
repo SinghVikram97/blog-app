@@ -8,7 +8,6 @@ import com.vikram.blogapp.entities.Post;
 import com.vikram.blogapp.entities.User;
 import com.vikram.blogapp.exception.ResourceNotFoundException;
 import com.vikram.blogapp.mapper.ModelMapper;
-import com.vikram.blogapp.repository.PostRepository;
 import com.vikram.blogapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,8 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(UserDTO userDTO, long userId) {
         User userDAO = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","id",userId));
 
-        userDAO.setName(userDTO.getName());
+        userDAO.setFirstName(userDTO.getFirstName());
+        userDAO.setLastName(userDTO.getLastName());
         userDAO.setEmail(userDTO.getEmail());
         userDAO.setPassword(userDTO.getPassword());
         userDAO.setAbout(userDAO.getAbout());
