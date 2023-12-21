@@ -4,9 +4,11 @@ import com.vikram.blogapp.dto.AuthRequest;
 import com.vikram.blogapp.dto.AuthResponse;
 import com.vikram.blogapp.dto.RegisterUserRequest;
 import com.vikram.blogapp.entities.User;
+import com.vikram.blogapp.exception.UserAlreadyExistsException;
 import com.vikram.blogapp.jwt.JWTService;
 import com.vikram.blogapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,10 +36,8 @@ public class AuthServiceImpl implements AuthService{
 
         try{
             userRepository.save(user);
-        }catch (Exception e){
-            System.out.println("VIKRAM HELLO "+e);
-            System.out.println(e.getMessage());
-            throw e;
+        }catch (DataIntegrityViolationException e){
+            throw new UserAlreadyExistsException(user.getEmail());
         }
 
         String jwtToken = jwtService.generateToken(user);

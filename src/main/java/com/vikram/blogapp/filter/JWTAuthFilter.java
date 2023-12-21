@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,12 +57,16 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource()
                                 .buildDetails(request)
                 );
-
+                MDC.put("username", userEmail);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
 
-        filterChain.doFilter(request, response);
+        try{
+            filterChain.doFilter(request, response);
+        }finally {
+            MDC.clear();
+        }
     }
 
     // Ignore login and register api

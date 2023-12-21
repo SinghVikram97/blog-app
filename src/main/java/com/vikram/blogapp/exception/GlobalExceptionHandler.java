@@ -19,7 +19,8 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .errorMessage(message)
                 .build();
-        return new ResponseEntity<>(errorResponse, HttpStatus.CREATED);    }
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String,String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException methodArgumentNotValidException) {
@@ -33,5 +34,14 @@ public class GlobalExceptionHandler {
                     errorResponse.put(fieldName, message);
                 }) );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException userAlreadyExistsException) {
+        String message = userAlreadyExistsException.getMessage();
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .errorMessage(message)
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 }
