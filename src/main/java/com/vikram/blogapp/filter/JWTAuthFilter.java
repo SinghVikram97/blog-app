@@ -1,5 +1,7 @@
 package com.vikram.blogapp.filter;
 
+import com.vikram.blogapp.constants.Constants;
+import com.vikram.blogapp.exception.InvalidAuthHeaderException;
 import com.vikram.blogapp.jwt.JWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,9 +37,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         final String userEmail;
 
         if (!StringUtils.hasLength(authHeader) || !authHeader.startsWith("Bearer ")) {
-            // TODO: throw exception
-            filterChain.doFilter(request, response);
-            return;
+            throw new InvalidAuthHeaderException(authHeader);
         }
 
         jwt = authHeader.substring(7);
@@ -62,5 +62,11 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    // Ignore login and register api
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return Constants.WHITELISTED_ENDPOINTS.contains(request.getRequestURI());
     }
 }

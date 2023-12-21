@@ -26,7 +26,6 @@ public class RegisterUserRequest {
     @Email(message = "Email address is not valid")
     private String email;
 
-
     @NotEmpty
     @Size(min=3, max=10, message = "Password must be between 3-10 characters")
     private String password;

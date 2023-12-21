@@ -12,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService{
@@ -30,7 +32,13 @@ public class AuthServiceImpl implements AuthService{
                 .role(registerUserRequest.getRole())
                 .build();
 
-        userRepository.save(user);
+        try{
+            userRepository.save(user);
+        }catch (Exception e){
+            System.out.println("VIKRAM HELLO "+e);
+            System.out.println(e.getMessage());
+            throw e;
+        }
 
         String jwtToken = jwtService.generateToken(user);
 

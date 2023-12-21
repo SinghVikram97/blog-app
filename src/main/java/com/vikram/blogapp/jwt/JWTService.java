@@ -1,5 +1,6 @@
 package com.vikram.blogapp.jwt;
 
+import com.vikram.blogapp.constants.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,6 +14,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+
+import static com.vikram.blogapp.constants.Constants.JWT_EXPIRY;
 
 @Service
 public class JWTService {
@@ -41,7 +44,7 @@ public class JWTService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() +1000*60*24)) // Valid for one day
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRY)) // Valid for one day
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
 
