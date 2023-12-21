@@ -4,6 +4,7 @@ import com.vikram.blogapp.dto.AuthRequest;
 import com.vikram.blogapp.dto.AuthResponse;
 import com.vikram.blogapp.dto.RegisterUserRequest;
 import com.vikram.blogapp.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +21,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
-            @RequestBody RegisterUserRequest request
+            @RequestBody @Valid RegisterUserRequest request
     ) {
         return new ResponseEntity<>(authService.register(request), HttpStatus.OK);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
-            @RequestBody AuthRequest request
+            @RequestBody @Valid AuthRequest request
     ) {
         return new ResponseEntity<>(authService.login(request), HttpStatus.OK);
     }

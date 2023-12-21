@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,11 +24,11 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    // POST - Create User
-    @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserDTO userDTO){
-        UserDTO createdUser = userService.createUser(userDTO);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    // GET - User by ID
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable long userId){
+        UserDTO user = userService.getUserById(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     // PUT - Update User
@@ -44,13 +43,6 @@ public class UserController {
     public ResponseEntity<UserDTO> deleteUser(@PathVariable long userId){
         UserDTO deletedUser = userService.deleteUser(userId);
         return new ResponseEntity<>(deletedUser, HttpStatus.OK);
-    }
-
-    // GET - User by ID
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable long userId){
-        UserDTO user = userService.getUserById(userId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     // GET - Get all users
