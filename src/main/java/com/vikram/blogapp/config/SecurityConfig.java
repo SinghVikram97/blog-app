@@ -27,7 +27,7 @@ import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import static com.vikram.blogapp.constants.Constants.*;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
