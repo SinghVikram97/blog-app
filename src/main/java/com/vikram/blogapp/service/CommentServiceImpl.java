@@ -1,16 +1,24 @@
 package com.vikram.blogapp.service;
 
+import com.vikram.blogapp.constants.Constants;
 import com.vikram.blogapp.dto.CommentDTO;
 import com.vikram.blogapp.entities.Comment;
 import com.vikram.blogapp.entities.Post;
 import com.vikram.blogapp.entities.User;
 import com.vikram.blogapp.exception.ResourceNotFoundException;
+import com.vikram.blogapp.exception.UserNotAuthorizedException;
 import com.vikram.blogapp.mapper.ModelMapper;
 import com.vikram.blogapp.repository.CommentRepository;
 import com.vikram.blogapp.repository.PostRepository;
 import com.vikram.blogapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
+
+import static com.vikram.blogapp.constants.Constants.MDC_ROLE_KEY;
+import static com.vikram.blogapp.constants.Constants.MDC_USERNAME_KEY;
+import static com.vikram.blogapp.util.AuthUtil.isSameUser;
+import static com.vikram.blogapp.util.AuthUtil.isSameUserOrAdmin;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +34,11 @@ public class CommentServiceImpl implements CommentService{
         long userId = commentDTO.getUserId();
         // Find user
         User userDao = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","id",userId));
+
+        // Check if same user
+        if(!isSameUser(MDC.get(MDC_USERNAME_KEY), userDao.getEmail())) {
+            throw new UserNotAuthorizedException();
+        }
 
         // Get postId
         long postId = commentDTO.getPostId();
@@ -51,7 +64,12 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     public CommentDTO updateComment(CommentDTO commentDTO, long commentId) {
-        Comment commentDAO = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", "id",commentId));
+        Comment commentDAO = getCommentDAOOrThrowException(commentId);
+
+        // Can only be updated by same user
+        if(!isSameUser(MDC.get(MDC_USERNAME_KEY), commentDAO.getUser().getEmail())) {
+            throw new UserNotAuthorizedException();
+        }
 
         // Update comment
         commentDAO.setContent(commentDTO.getContent());
@@ -74,7 +92,11 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     public CommentDTO deleteComment(long commentId) {
-        Comment commentDAO = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", "id",commentId));
+        Comment commentDAO = getCommentDAOOrThrowException(commentId);
+
+        if(!isSameUserOrAdmin(MDC.get(MDC_USERNAME_KEY), MDC.get(MDC_ROLE_KEY), commentDAO.getUser().getEmail())) {
+            throw new UserNotAuthorizedException();
+        }
 
         // Get user and post
         User user = commentDAO.getUser();
@@ -91,7 +113,14 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     public CommentDTO getCommentById(long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentId));
+        Comment comment = getCommentDAOOrThrowException(commentId);
+        if(!isSameUserOrAdmin(MDC.get(MDC_USERNAME_KEY), MDC.get(MDC_ROLE_KEY), comment.getUser().getEmail())) {
+            throw new UserNotAuthorizedException();
+        }
         return modelMapper.daoToCommentDTO(comment);
+    }
+
+    public Comment getCommentDAOOrThrowException(long commentId) {
+        return commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentId));
     }
 }

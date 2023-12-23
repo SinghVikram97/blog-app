@@ -1,6 +1,7 @@
 package com.vikram.blogapp.filter;
 
 import com.vikram.blogapp.constants.Constants;
+import com.vikram.blogapp.entities.User;
 import com.vikram.blogapp.exception.InvalidAuthHeaderException;
 import com.vikram.blogapp.jwt.JWTService;
 import jakarta.servlet.FilterChain;
@@ -11,16 +12,20 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+
+import static com.vikram.blogapp.constants.Constants.*;
 
 @Component
 @RequiredArgsConstructor
@@ -57,7 +62,8 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource()
                                 .buildDetails(request)
                 );
-                MDC.put("username", userEmail);
+                MDC.put(MDC_USERNAME_KEY, userEmail);
+                MDC.put(MDC_ROLE_KEY, ((User) userDetails).getRole().toString());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
@@ -69,9 +75,8 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         }
     }
 
-    // Ignore login and register api
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return Constants.WHITELISTED_ENDPOINTS.contains(request.getRequestURI());
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        return WHITELISTED_ENDPOINTS.stream().anyMatch(url -> new AntPathRequestMatcher(url).matches(request));
     }
 }

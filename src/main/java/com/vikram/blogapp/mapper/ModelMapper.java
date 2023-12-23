@@ -31,7 +31,6 @@ public class ModelMapper {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .password(user.getPassword())
                 .about(user.getAbout())
                 .role(user.getRole())
                 .build();

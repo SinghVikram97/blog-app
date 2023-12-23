@@ -44,4 +44,13 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(UserNotAuthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotAuthorizedException(UserNotAuthorizedException userNotAuthorizedException) {
+        String message = userNotAuthorizedException.getMessage();
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .errorMessage(message)
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
 }

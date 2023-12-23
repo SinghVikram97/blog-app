@@ -7,11 +7,14 @@ import com.vikram.blogapp.entities.Category;
 import com.vikram.blogapp.entities.Post;
 import com.vikram.blogapp.entities.User;
 import com.vikram.blogapp.exception.ResourceNotFoundException;
+import com.vikram.blogapp.exception.UserNotAuthorizedException;
 import com.vikram.blogapp.mapper.ModelMapper;
 import com.vikram.blogapp.repository.CategoryRepository;
 import com.vikram.blogapp.repository.PostRepository;
 import com.vikram.blogapp.repository.UserRepository;
+import com.vikram.blogapp.util.AuthUtil;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,9 +23,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.vikram.blogapp.constants.Constants.MDC_ROLE_KEY;
+import static com.vikram.blogapp.constants.Constants.MDC_USERNAME_KEY;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -34,11 +38,28 @@ public class PostServiceImpl implements PostService{
     private final ModelMapper modelMapper;
 
     @Override
+    public PostDTO getPostById(long postId) {
+        Post postDao = getPostDAOOrThrowException(postId);
+
+        if(!AuthUtil.isSameUserOrAdmin(MDC.get(MDC_USERNAME_KEY), MDC.get(MDC_ROLE_KEY), postDao.getUser().getEmail())) {
+            throw new UserNotAuthorizedException();
+        }
+
+        return modelMapper.daoTOPostDTO(postDao);
+    }
+
+    @Override
     public PostDTO createPost(PostDTO postDTO) {
        // Get userId
         long userId = postDTO.getUserId();
+
         // Find user
         User userDao = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","id",userId));
+
+        // Check if same user as present in JWT
+        if(!AuthUtil.isSameUser(MDC.get(MDC_USERNAME_KEY),userDao.getEmail())) {
+            throw new UserNotAuthorizedException();
+        }
 
         // Get categoryId - it can be null
         Category categoryDAO = null;
@@ -75,7 +96,12 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostDTO updatePost(PostDTO postDTO, long postId) {
         // We can update title, content, user, category
-        Post postDao = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id",postId));
+        Post postDao = getPostDAOOrThrowException(postId);
+
+        // Check if user owns this post
+        if(!AuthUtil.isSameUser(MDC.get(MDC_USERNAME_KEY),postDao.getUser().getEmail())) {
+            throw new UserNotAuthorizedException();
+        }
 
         postDao.setTitle(postDTO.getTitle());
         postDao.setContent(postDTO.getContent());
@@ -98,7 +124,12 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostDTO deletePost(long postId) {
-        Post postDao = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id",postId));
+        Post postDao = getPostDAOOrThrowException(postId);
+
+        if(!AuthUtil.isSameUserOrAdmin(MDC.get(MDC_USERNAME_KEY), MDC.get(MDC_ROLE_KEY), postDao.getUser().getEmail())) {
+            throw new UserNotAuthorizedException();
+        }
+
         postRepository.delete(postDao);
 
         // Remove this post from user and category as well
@@ -116,6 +147,11 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PaginationResponseDTO getAllPosts(int pageNumber, int pageSize, String sortBy, String sortDir) {
+
+        if(!AuthUtil.isAdmin(MDC.get(MDC_ROLE_KEY))) {
+            throw new UserNotAuthorizedException();
+        }
+
         Sort sort;
         if(sortDir.equalsIgnoreCase("desc")) {
             sort = Sort.by(sortBy).descending();
@@ -140,20 +176,27 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PostDTO getPostById(long postId) {
-        Post postDao = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id",postId));
-        return modelMapper.daoTOPostDTO(postDao);
-    }
-
-    @Override
     public List<PostDTO> searchPosts(String keyword) {
+        if(!AuthUtil.isAdmin(MDC.get(MDC_ROLE_KEY))) {
+            throw new UserNotAuthorizedException();
+        }
+
         List<Post> postDAOList = postRepository.findByTitleContaining(keyword);
         return postDAOList.stream().map(modelMapper::daoTOPostDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<CommentDTO> getAllComments(long postId) {
-        Post postDao = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id",postId));
+        Post postDao = getPostDAOOrThrowException(postId);
+
+        if(!AuthUtil.isSameUserOrAdmin(MDC.get(MDC_USERNAME_KEY), MDC.get(MDC_ROLE_KEY), postDao.getUser().getEmail())) {
+            throw new UserNotAuthorizedException();
+        }
+
         return postDao.getComments().stream().map(modelMapper::daoToCommentDTO).collect(Collectors.toList());
+    }
+
+    public Post getPostDAOOrThrowException(long postId) {
+        return postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id",postId));
     }
 }

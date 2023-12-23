@@ -12,7 +12,15 @@ public final class Constants {
 
     public static final int JWT_EXPIRY = 1000*60*24; // 1 day
 
-    public static final List<String> WHITELISTED_ENDPOINTS = List.of("/api/auth/register");
+    public static final String MDC_USERNAME_KEY = "username";
+
+    public static final String MDC_ROLE_KEY = "role";
+
+    public static final List<String> WHITELISTED_ENDPOINTS = List.of(
+            "/api/auth/register",
+            "/api/auth/login");
+
+
     private Constants() {
     }
 }
