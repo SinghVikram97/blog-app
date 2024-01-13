@@ -1,9 +1,13 @@
 package com.vikram.blogapp.controller;
 
-import com.vikram.blogapp.dto.CommentDTO;
-import com.vikram.blogapp.dto.PaginationResponseDTO;
-import com.vikram.blogapp.dto.PostDTO;
+import com.vikram.blogapp.dto.*;
 import com.vikram.blogapp.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,36 +27,94 @@ import static com.vikram.blogapp.constants.Constants.PAGINATION_DEFAULT_SORT_DIR
 public class PostController {
     private final PostService postService;
 
-    // Create a Post
     @PostMapping
+    @Operation(summary = "Creates a post")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Created the post",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PostDTO.class)) }),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "User not authorized",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Request body is invalid",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)))}
+    )
     public ResponseEntity<PostDTO> createPost(@RequestBody @Valid PostDTO postDTO) {
         PostDTO post = postService.createPost(postDTO);
         return new ResponseEntity<>(post, HttpStatus.CREATED);
     }
 
-    // Update a Post
     @PutMapping("/{postId}")
+    @Operation(summary = "Updates a post")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated the post",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PostDTO.class)) }),
+            @ApiResponse(responseCode = "404", description = "Post not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "User not authorized",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Request body is invalid",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)))}
+    )
     public ResponseEntity<PostDTO> updatePost(@RequestBody @Valid PostDTO postDTO, @PathVariable long postId){
         PostDTO updatedPost = postService.updatePost(postDTO, postId);
         return new ResponseEntity<>(updatedPost, HttpStatus.OK);
     }
 
-    // DELETE - Delete a Post
+    @Operation(summary = "Deletes a post")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted the post",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PostDTO.class)) }),
+            @ApiResponse(responseCode = "404", description = "Post not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "User not authorized",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)))}
+    )
     @DeleteMapping("/{postId}")
     public ResponseEntity<PostDTO> deletePost(@PathVariable long postId){
         PostDTO deletedPost = postService.deletePost(postId);
         return new ResponseEntity<>(deletedPost, HttpStatus.OK);
     }
 
-    // GET - Post by ID
     @GetMapping("/{postId}")
+    @Operation(summary = "Get a post by postId")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Returns the post",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PostDTO.class)) }),
+            @ApiResponse(responseCode = "404", description = "Post not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "User not authorized",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)))}
+    )
     public ResponseEntity<PostDTO> getPost(@PathVariable long postId){
         PostDTO postDTO = postService.getPostById(postId);
         return new ResponseEntity<>(postDTO, HttpStatus.OK);
     }
 
-    // GET - Get all posts
     @GetMapping
+    @Operation(summary = "Updates a post")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Returns all the posts",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PaginationResponseDTO.class)) }),
+            @ApiResponse(responseCode = "403", description = "User not authorized",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)))}
+    )
     public ResponseEntity<PaginationResponseDTO> getAllPosts(
             @RequestParam(value = "pageNumber", defaultValue = PAGINATION_DEFAULT_PAGE_NUMBER, required = false) int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = PAGINATION_DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -63,8 +125,15 @@ public class PostController {
         return new ResponseEntity<>(paginationResponseDTO, HttpStatus.OK);
     }
 
-    // Search posts
     @GetMapping("/search/{keyword}")
+    @Operation(summary = "Search for a post")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Returns the relevant posts",
+                    content = { @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostDTO.class)))}),
+            @ApiResponse(responseCode = "403", description = "User not authorized",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)))}
+    )
     public ResponseEntity<List<PostDTO>> searchPostByTitle(
             @PathVariable("keyword") String keyword
     ) {
@@ -72,8 +141,18 @@ public class PostController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    // Get all comments for a post
     @GetMapping("/{postId}/comments")
+    @Operation(summary = "Get all comments for a post")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Returns the relevant posts",
+                    content = { @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentDTO.class)))}),
+            @ApiResponse(responseCode = "404", description = "Post not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "User not authorized",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)))}
+    )
     public ResponseEntity<List<CommentDTO> > getAllComments(@PathVariable long postId){
         List<CommentDTO> allComments = postService.getAllComments(postId);
         return new ResponseEntity<>(allComments, HttpStatus.OK);

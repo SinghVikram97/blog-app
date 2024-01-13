@@ -50,7 +50,7 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostDTO createPost(PostDTO postDTO) {
-       // Get userId
+        // Get userId
         long userId = postDTO.getUserId();
 
         // Find user

@@ -62,6 +62,9 @@ public class UserController {
                             schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "403", description = "User not authorized",
                     content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Request body is invalid",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)))}
     )
     public ResponseEntity<UserDTO> updateUser(@RequestBody @Valid UserDTO userDTO, @PathVariable long userId){
