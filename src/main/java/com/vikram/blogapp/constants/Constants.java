@@ -18,7 +18,10 @@ public final class Constants {
 
     public static final List<String> WHITELISTED_ENDPOINTS = List.of(
             "/api/auth/register",
-            "/api/auth/login");
+            "/api/auth/login",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html");
 
 
     private Constants() {
