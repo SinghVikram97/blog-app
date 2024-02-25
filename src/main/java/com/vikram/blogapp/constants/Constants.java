@@ -17,6 +17,7 @@ public final class Constants {
     public static final String MDC_ROLE_KEY = "role";
 
     public static final List<String> WHITELISTED_ENDPOINTS = List.of(
+            "/actuator/**",
             "/api/auth/register",
             "/api/auth/login",
             "/v3/api-docs/**",
