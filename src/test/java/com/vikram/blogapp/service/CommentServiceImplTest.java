@@ -256,6 +256,7 @@ class CommentServiceImplTest {
 
         when(commentRepository.findById(commentDTO.getId())).thenReturn(java.util.Optional.of(comment));
         MDC.put(MDC_USERNAME_KEY, differentUser.getEmail());
+        MDC.put(MDC_ROLE_KEY, Role.ROLE_USER.name());
 
         assertThrows(UserNotAuthorizedException.class, () -> {
             commentService.deleteComment(commentDTO.getId());
@@ -318,6 +319,7 @@ class CommentServiceImplTest {
         when(commentRepository.findById(expectedCommentDTO.getId())).thenReturn(java.util.Optional.of(comment));
 
         MDC.put(MDC_USERNAME_KEY, "different_user@example.com");
+        MDC.put(MDC_ROLE_KEY, Role.ROLE_USER.name());
 
         assertThrows(UserNotAuthorizedException.class, () -> {
             commentService.getCommentById(expectedCommentDTO.getId());
