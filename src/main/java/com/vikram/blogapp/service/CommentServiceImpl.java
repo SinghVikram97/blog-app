@@ -35,7 +35,7 @@ public class CommentServiceImpl implements CommentService{
         // Find user
         User userDao = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","id",userId));
 
-        // Check if same user
+        // Check if same user in jwt and commentDTO
         if(!isSameUser(MDC.get(MDC_USERNAME_KEY), userDao.getEmail())) {
             throw new UserNotAuthorizedException();
         }
