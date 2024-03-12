@@ -1,6 +1,5 @@
 package com.vikram.blogapp.filter;
 
-import com.vikram.blogapp.constants.Constants;
 import com.vikram.blogapp.entities.User;
 import com.vikram.blogapp.exception.InvalidAuthHeaderException;
 import com.vikram.blogapp.jwt.JWTService;
